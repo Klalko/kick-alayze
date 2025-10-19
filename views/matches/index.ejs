@@ -1,0 +1,147 @@
+<%layout ('layouts/boilerplate')%>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        xintegrity="sha512-..." crossorigin="anonymous" />
+
+
+    <div id="map" style="width: 100%; height: 500px"></div>
+    <h1 class="mt-4">All User-Contributed Matches</h1>
+
+    <!-- Display Flash/Success Message -->
+    <% if (msg) { %>
+        <div class="alert alert-success">
+            <%= msg %>
+        </div>
+        <% } %>
+
+            <!-- START: Mongoose Matches GeoJSON Script (Required for the Map) -->
+            <script>
+                const maptilerApiKey = '<%- process.env.MAPTILER_API_KEY %>';
+
+                const matches = {
+                    type: "FeatureCollection",
+                    features: <%- JSON.stringify(
+                        matches.map(match => ({
+                            type: "Feature",
+                            geometry: match.geometry,
+                            // NOTE: Assuming your Mongoose match schema has a method or property to generate this markup
+                            properties: {
+                                popUpMarkup: match.properties?.popUpMarkup || `<h3>${match.title}</h3><p>${match.location}</p><a href="/matches/${match._id}">View Match</a>`
+                            }
+                        }))
+                    ) %>
+    };
+            </script>
+            <script src="/javascripts/clusterMap.js"></script>
+            <!-- END: Mongoose Matches GeoJSON Script -->
+
+
+           
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+
+                <% for (let match of matches) { %>
+
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <!-- Assuming 'images' is an array on your Mongoose Match model -->
+                            <img src="<%=match.images[0].url%>" class="card-img-top" alt="Stadium Image"
+                                style="height: 200px; width: 100%; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <%=match.title%>
+                                </h5>
+                                <p class="card-text text-muted small mb-2">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    <%=match.description%>
+                                </p>
+                                <p class="card-text text-muted">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    <%=match.location%>
+                                </p>
+                                <a href="/matches/<%=match._id%>" class="btn btn-primary mt-2">View details</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <% } %>
+
+            </div>
+            <div class="mt-4">
+                <a href="/Matches/new" class="btn btn-success">Add a new match</a>
+            </div>
+        
+
+
+            <hr class="my-5">
+
+
+            <!-- START: Live API Match Feed (NEW CODE BLOCK 1: HEADING AND ERROR CHECK) -->
+            <h2 class="text-center mb-4 text-primary fw-bold">Live Match Feed (Today's Top 5 Leagues)</h2>
+
+            <% if (apiErrorMessage) { %>
+                
+                <div class="alert alert-warning" role="alert">
+                    <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i> Warning!</h4>
+                    <%= apiErrorMessage %>
+                </div>
+                <% } %>
+                    <!-- END NEW CODE BLOCK 1 -->
+
+                    <div class="row row-cols-1 row-cols-md-2 g-4 mt-3">
+
+                        <!-- START: Live API Match Feed Loop (NEW CODE BLOCK 2: THE DATA DISPLAY) -->
+                        <% if (liveMatches && liveMatches.length> 0) { %>
+                            <% for (let match of liveMatches) { %>
+
+                                <div class="col">
+                                    <div
+                                        class="card h-100 shadow-lg border-0 rounded-lg overflow-hidden live-match-card">
+                                        <!-- Match Venue Image (From your enriched data) -->
+                                        <img src="<%= match.venueThumbnail || 'https://placehold.co/400x200/cccccc/333333?text=Venue+Image+Unavailable' %>"
+                                            class="card-img-top" alt="<%= match.venueName %> Stadium Image"
+                                            style="height: 200px; width: 100%; object-fit: cover;">
+
+                                        <div class="card-body d-flex flex-column">
+
+                                            <!-- Match Title -->
+                                            <h5 class="card-title text-dark fw-bold mb-2">
+                                                <i class="fas fa-futbol text-success me-2"></i>
+                                                <%= match.strEvent %>
+                                            </h5>
+
+                                            <!-- Venue/Location -->
+                                            <p class="card-text text-muted small mb-2">
+                                                <i class="fas fa-map-marker-alt me-1"></i>
+                                                <%= match.venueName %> (<%= match.venueLocation %>)
+                                            </p>
+
+                                            <!-- Kickoff Time -->
+                                            <p class="card-text fw-bold text-success mt-auto">
+                                                <i class="far fa-clock me-1"></i> Kickoff: <%= match.strTime %> UTC
+                                            </p>
+
+                                            <!-- League -->
+                                            <% if (match.strLeague) { %>
+                                                <div class="mt-2 pt-2 border-top">
+                                                    <small class="text-muted"><i class="fas fa-trophy me-1"></i>
+                                                        <%= match.strLeague %>
+                                                    </small>
+                                                </div>
+                                                <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <% } %>
+                                    <% } else if (!apiErrorMessage) { %>
+                                        <!-- START: No Matches Found Message (NEW CODE BLOCK 3) -->
+                                        <!-- Display this if no matches are found and there was no error -->
+                                        <div class="col-12">
+                                            <div class="alert alert-info text-center">
+                                                <i class="fas fa-info-circle me-2"></i> No Top 5 league matches found in
+                                                the current time window.
+                                            </div>
+                                        </div>
+                                        <!-- END NEW CODE BLOCK 3 -->
+                                        <% } %>
+                    </div>
+                    <!-- END: Live API Match Feed -->

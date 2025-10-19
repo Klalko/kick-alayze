@@ -1,0 +1,61 @@
+<%layout ('layouts/boilerplate')%>
+
+
+   
+
+<form    style="display: flex; flex-direction: column; align-items: center;"action="/Matches/new" method="post" novalidate class="validated-form" enctype="multipart/form-data">
+    <h1 style="margin-bottom: 25px;"   >Enter details</h1>
+    <div class="mb-3">
+<label for="title" style="font-size:30px;">Title</label>
+<input class="form-control" type="text" id="title" style="width: 500px;" name="matches[title]"required>
+<div class="valid-feedback">
+    Looks good!
+</div>
+    </div>
+    <div class="mb-3">
+<label class="form-label"for="location" style="font-size:30px;">location</label>
+<input class="form-control "style="width: 500px;" type="text" id="location" name="matches[location]"required>
+<div class="valid-feedback">
+    Looks good!
+</div>
+    </div>
+
+<input type="file" class="mb-3 form-control" style="width: 500px;" name="image" id="" multiple>
+   <!-- <div class="mb-3">
+        <label class="form-label" for="image" style="font-size:30px;">Image URL</label>
+        <input class="form-control " style="width: 500px;" type="text" id="image" name="matches[image]"required>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div> -->
+
+   
+<div class="form-group" style="width: 500px;">
+    <label for="price" class="form-label" style="display:block; text-align:left; margin-bottom:5px;"required>
+        Ticket price
+    </label>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">$</span>
+        <input type="text" id="price" class="form-control" placeholder="0.00" aria-label="price"
+            aria-describedby="basic-addon1" name="matches[price]"required>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+    </div>
+</div>
+<div class="mb-3">
+    <label class="form-label" for="description" style="font-size:30px;">Description URL</label>
+    <textarea class="form-control " style="width: 500px;" type="text" id="description"
+        name="matches[description]" required></textarea>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+</div>
+
+    
+    <button style="margin-top: 25px;margin-bottom: 25px;" type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+
+     
