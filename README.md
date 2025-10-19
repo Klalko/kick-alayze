@@ -135,10 +135,3 @@ Passionate about web development, AI, and football analytics.
 
 This project is licensed under the **MIT License** — feel free to use and modify it for learning or development purposes.
 
-```
-
----
-
-Would you like me to format this README so it automatically **displays your uploaded screenshots** (from the two images you sent) using correct Markdown paths?  
-If yes, please confirm whether you’ll upload them to your repo (e.g. `/public/images/screenshots`) or want me to set the links to use your GitHub-hosted image URLs.
-```
